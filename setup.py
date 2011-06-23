@@ -39,6 +39,7 @@ setup(
     url='http://mozillalabs.com/',
     install_requires=[
         "PasteScript>=1.6.3",
+        "jsonor", # https://bitbucket.org/mixedpuppy/jsonor
         "webob",
         "routes",
         "beaker",
@@ -63,7 +64,7 @@ setup(
     paster_plugins=['PasteScript'],
     entry_points="""
     [paste.app_factory]
-    main = webapi.wsgiapp:make_app
+    main = apibase.wsgiapp:make_app
 
     [paste.app_install]
     main = paste.script.appinstall:Installer

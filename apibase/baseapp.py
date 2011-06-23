@@ -61,11 +61,12 @@ def api(func, *args, **kwargs):
 class BaseController(object):
     special_vars = ['controller', 'action']
 
-    def __init__(self, request, url, config):
+    def __init__(self, request, url, config, app):
         self.request = request
         self.session = request.environ.get('beaker.session', {})
         self.url = url
         self.config = config
+        self.app = app
 
     def __call__(self):
         action = self.request.match.get('action', 'index')
@@ -92,7 +93,7 @@ class BaseApplication(object):
         url = URLGenerator(self.map, req.environ)
         req.match = match
         req.route = route
-        controller = match['controller'](req, url, self.config)
+        controller = match['controller'](req, url, self.config, self)
         return controller()
 
 
@@ -101,7 +102,6 @@ def set_app(map, appKlass=BaseApplication, wrapper=None):
     def make_app(global_conf, **app_conf):
         """Returns a WSGI Application."""
         global_conf.update(app_conf)
-
         app = appKlass(global_conf, map)
 
         if wrapper is not None:
