@@ -1,0 +1,93 @@
+
+body #wrapper > div[data-role="toolbar"] {
+    width: 100%;
+    height: 48px;
+/* place at bottom?
+    top: auto;
+    bottom: 0;
+    position: absolute;
+*/
+    border-right: none;
+    border-bottom: 1px solid #222;
+    
+    -webkit-box-shadow: 0 -10px 3px 10px #000000;
+       -moz-box-shadow: 0 -10px 3px 10px #000000;
+            box-shadow: 0 -10px 3px 10px #000000;
+}
+
+div[data-role="toolbar"] li.settings {
+    bottom: 0;
+    right: 0;
+}
+
+body #wrapper > div[data-role="toolbar"] ul {
+    margin: 0;
+    height: 100%;
+}
+
+body #content {
+    padding: 48px 0 0;
+}
+
+body div[data-role="pages"] {
+    width: 100%;
+    height: 100%;
+}
+
+body div[data-role="page"] {
+    left: -100%;
+    height: 100%;
+    width: 100%;
+    /*position: fixed;*/
+    opacity: 0;
+    overflow: hidden;
+    margin: 1px;
+    background-color: white;
+    z-index: -1;
+    
+        -webkit-transition: all 0.2s ease-out;
+           -moz-transition: all 0.2s ease-out;
+                transition: all 0.2s ease-out;
+}
+
+    body div[data-role="page"].selected {
+        display: block;
+        left: auto;
+        opacity: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 0;
+    }
+
+    body div[data-role="page"].secondary {
+        width: 100%;
+        margin: 0;
+    }
+    body div[data-role="page"].secondary.selected {
+        z-index: 50;
+    }
+
+    body.secondary #msgtoolbar {
+        display: block;
+    }
+    body.secondary #apptoolbar {
+        display: none;
+    }
+
+body #conversation {
+    background: #f2f2f2;
+}
+
+body #compose .compose-inner {
+    padding: 4px;
+}
+
+body div[data-role="page"].popup {
+    background: #fff;
+}
+
+body div[data-role="page"].popup .popup-inner {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}

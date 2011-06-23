@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; width=320px">
+    <title>API Explorer</title>
+    <link rel="stylesheet" type="text/css" href="page.css">
+    <script type="text/javascript" src="js/jquery-1.5.min.js"></script>
+    <script type="text/javascript" src="js/jquery-textOverflow.js"></script>
+    <script type="text/javascript" src="js/jquery.tmpl.min.js"></script>
+    <script type="text/javascript" src="js/jquery.prettydate.js"></script>
+    <script type="text/javascript" src="js/jquery.ba-hashchange.min.js"></script>
+    <script type="text/javascript" src="js/prettyprint.js"></script>
+    <script type="text/javascript" src="js/schema.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+    <script type="text/javascript" src="js/nav.js"></script>
+</head>
+
+<body>
+
+<script id="tmplAPIDoc" type="text/x-jquery-tmpl">
+  <h1 class="api-title"><img src="${schema.icons.x16}"/> ${schema.title}</h1>
+  <div class="api-description">${schema.description}</div>
+</script>
+
+<script id="tmplComponentList" type="text/x-jquery-tmpl">
+  <li id="${name}" class="title">${name}
+  <div class="component-description">{{html resource.description}}</div>
+  </li>
+</script>
+
+<script id="tmplEndpointList" type="text/x-jquery-tmpl">
+  <li id="${id}" class="title">${name}
+  <div class="component-description">{{html resource.description}}</div>
+  </li>
+</script>
+
+<script id="tmplAPICallRow" type="text/x-jquery-tmpl">
+  {{each(name, param) parameters}}
+    {{if not param.required}}
+  <tr>
+  <td>${param.required?'*':''}${name}</td>
+  <td><div><input id="${name}"/></div></td>
+  </tr>
+  <tr>
+  <td/><td>${param.description} (${param.type})</td>
+  </tr>
+    {{/if}}
+  {{/each}}
+</script>
+
+<script id="tmplAPICallDoc" type="text/x-jquery-tmpl">
+  <table><colgroup><col/></colgroup><tbody>
+  {{each(i, p) $item.getOrderedParameters()}}
+  <tr>
+  <td>${p[1].required?'*':''}${p[0]}</td>
+  <td><div><input id="${p[0]}"/></div></td>
+  </tr>
+  <tr>
+  <td/><td>${p[1].description} (${p[1].type})</td>
+  </tr>
+  {{/each}}
+  
+  </tbody></table>
+  <button id="submitCall" data-for="${id}">submit</button>
+</script>
+
+<div id="wrapper">
+    
+    <div id="content">
+        <!--<div data-role="toolbar" id="search">
+            <div class="hbox">
+                <input id="searchText" type="text" placeholder="search" class="boxFlex search">
+                <button id="searchSubmit"><img src="i/search.png"></button>
+            </div>
+        </div>-->
+
+      <div data-role="pages">
+        <div data-role="page" id="components" class="primary clearfix boxFlex">
+            <div data-role="header" class="apiinfo">
+            </div>
+            <ul id="endpointList">
+            </ul>
+        </div>
+
+<!--
+        <div data-role="page" id="endpoints" class="primary clearfix boxFlex ">
+            <div data-role="header" class="hbox endpointinfo">
+                <h1 class="boxFlex">component.endpoint</h1>
+                <button class="nav home active" data-for="components"></button>
+            </div>
+            <ul id="endpointList">
+
+            </ul>
+        </div>
+-->
+
+        <div data-role="page" id="apicall" class="secondary clearfix boxFlex">
+            <div data-role="header" class="hbox apicallinfo">
+                <h1 class="boxFlex">component.endpoint.call</h1>
+            </div>
+            <div id="apiCallData"></div>
+            <div id="apiResponseData"></div>
+        </div>
+
+      </div>
+    </div>
+  
+    <div data-role="toolbar" id="apptoolbar">
+        <nav>
+            <ul class="clearfix">
+                <li class="labels" data-for="components"></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div data-role="toolbar" id="msgtoolbar">
+        <nav>
+            <ul class="clearfix">
+                <li class="back active"></li>
+                <!--<li class="search off" data-for="search"></li>-->
+            </ul>
+        </nav>
+    </div>
+</div>
+
+</body>
+</html>
