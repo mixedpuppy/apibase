@@ -200,6 +200,7 @@ def generateSchema(app, req):
     schema["kind"] = "discovery#restDescription"
     schema["protocol"] = "rest"
     schema["basePath"] = url('/')
+    appname = schema.get('name')
 
     resources = schema['resources'] = {}
     for m in mapper.matchlist:
@@ -259,6 +260,7 @@ def generateSchema(app, req):
                 doc = inspect.getdoc(method)
                 if doc:
                     f['doc'] = doc and reST_to_html_fragment(doc)
+            f['id'] = "%s.%s.%s" % (appname, classname, name)
             f['httpMethod'] = m.conditions and m.conditions.get('method', 'GET') or 'GET'
             path = f['path'] = url(m.routepath)
             parameterOrder = re.findall(r'\{(.*?)\}', path, re.U)
