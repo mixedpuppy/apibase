@@ -18,7 +18,7 @@
 <body>
 
 <script id="tmplAPIDoc" type="text/x-jquery-tmpl">
-  <h1 class="api-title"><img src="${schema.icons.x16}"/> ${schema.title}</h1>
+  <h2 class="api-title"><img src="${schema.icons.x16}"/> ${schema.title}</h2>
   <div class="api-description">${schema.description}</div>
 </script>
 
@@ -29,26 +29,14 @@
 </script>
 
 <script id="tmplEndpointList" type="text/x-jquery-tmpl">
-  <li id="${id}" class="title">${name}
+  <li id="${id}" class="title"><h3>${name}</h3>
   <div class="component-description">{{html resource.description}}</div>
   </li>
 </script>
 
-<script id="tmplAPICallRow" type="text/x-jquery-tmpl">
-  {{each(name, param) parameters}}
-    {{if not param.required}}
-  <tr>
-  <td>${param.required?'*':''}${name}</td>
-  <td><div><input id="${name}"/></div></td>
-  </tr>
-  <tr>
-  <td/><td>${param.description} (${param.type})</td>
-  </tr>
-    {{/if}}
-  {{/each}}
-</script>
-
 <script id="tmplAPICallDoc" type="text/x-jquery-tmpl">
+  <h4>Request Parameters</h4>
+  {{if api.parameters}}
   <table><colgroup><col/></colgroup><tbody>
   {{each(i, p) $item.getOrderedParameters()}}
   <tr>
@@ -59,9 +47,35 @@
   <td/><td>${p[1].description} (${p[1].type})</td>
   </tr>
   {{/each}}
-  
   </tbody></table>
-  <button id="submitCall" data-for="${id}">submit</button>
+  {{else}}
+  <div>There are no parameters for this call</div>
+  {{/if}}
+  
+  <h4>Response</h4>
+  {{if response}}
+  
+  <table class="responseObject"><colgroup><col/><col/></colgroup><tbody>
+  <th colspan="3">${response.id} (${response.type})</th>
+  {{each(i, p) response.properties}}
+  <tr>
+  <td>${i}</td><td>${p.type}</td><td>${p.description}</td>
+  </tr>
+  {{/each}}
+  </tbody></table>
+  {{else api.response}}
+  <table><colgroup><col/></colgroup><tbody>
+  <tr>
+  <td class="response-type">${api.response.type}</td>
+  <td class="response-description">${api.response.description}</td>
+  </tr>
+  </tbody></table>
+  {{else}}
+  <div>There is no response to this call.</div>
+  {{/if}}
+
+  <h4>Test API call</h4>
+  <button id="submitCall" data-for="${api.id}">submit</button>
 </script>
 
 <div id="wrapper">
@@ -96,10 +110,12 @@
 
         <div data-role="page" id="apicall" class="secondary clearfix boxFlex">
             <div data-role="header" class="hbox apicallinfo">
-                <h1 class="boxFlex">component.endpoint.call</h1>
+                <h3 class="boxFlex">component.endpoint.call</h3>
             </div>
+            <div class="content">
             <div id="apiCallData"></div>
             <div id="apiResponseData"></div>
+            </div>
         </div>
 
       </div>

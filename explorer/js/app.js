@@ -144,6 +144,7 @@ pages.add({
     },
     show: function() {
         if (!window.apiSchema) {
+            // test path /explorer/test/books.json
             schema.load('/api/schema', function(data) {
                 window.apiSchema = data;
                 pages.get('components').render();
@@ -160,33 +161,57 @@ pages.add({
         var data = schema.getById(window.apiSchema, endpoint);
         //dump(endpoint+": "+JSON.stringify(data)+"\n");
 
-        $('#apicall .apicallinfo h1').text(endpoint);
+        function getResponseObject() {
+            var param;
+            if (data.response) {
+                $.each(data.response, function(pname) {
+                    if (pname == '$ref') {
+                        pname = data.response[pname];
+                        param = schema.getById(window.apiSchema, pname);
+                    }
+                });
+                if (param) {
+                    return param
+                }
+            }
+            return null;
+        }
+        var resp = getResponseObject();
+
+        $('#apicall .apicallinfo h3').text(endpoint);
         $('#apiCallData').empty();
         $('#apiResponseData').empty();
-        
+
         $("#tmplAPICallDoc")
-            .tmpl( data, {
+            .tmpl( {'api': data, 'response': resp}, {
                 getOrderedParameters: function() {
                     var params = [];
                     // first by order
                     if (data.parameterOrder) {
                         for (var i in data.parameterOrder) {
                             var pname = data.parameterOrder[i];
-                            params.push([pname, data.parameters[pname]]);
+                            var param = data.parameters[pname];
+                            if (pname == '$ref') {
+                                param = schema.getById(window.apiSchema, param);
+                            }
+                            params.push([pname, param]);
                         }
                     }
                     if (data.parameters) {
                         $.each(data.parameters, function(pname) {
-                            var p = data.parameters[pname];
+                            var param = data.parameters[pname];
+                            if (pname == '$ref') {
+                                param = schema.getById(window.apiSchema, param);
+                            }
                             if (!data.parameterOrder || data.parameterOrder.indexOf(pname) < 0)
-                                params.push([pname, p]);
+                                params.push([pname, param]);
                         });
                     }
                     return params;
                 }
+
             })
             .appendTo("#apiCallData");  
-
 
         $("#submitCall").click(function() {
             $('#apiResponseData').empty();
