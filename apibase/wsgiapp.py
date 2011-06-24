@@ -23,7 +23,7 @@ class Test(BaseController):
             'item': api_param('string', True, None, ['me'], 'path','User to query'),
         },
         response={'type': 'string',
-                  'doc': ('returns html view')})
+                  'description': ('returns html view')})
     def view(self, item):
         return {"result": "this is a view [%s]" % item}
 
