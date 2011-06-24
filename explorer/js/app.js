@@ -1,5 +1,92 @@
 // pages are attached to a page in the dom, and handle all dom manipulation
 
+prettyPrint.config.styles = {
+    array: {
+        th: {
+            backgroundColor: '#222222',
+            backgroundImage: '-moz-linear-gradient(center top , #222222 0%, #1F1F1F  100%)'
+        }
+    },
+    'function': {
+        th: {
+            backgroundColor: '#222222',
+            backgroundImage: '-moz-linear-gradient(center top , #222222 0%, #1F1F1F  100%)'
+        }
+    },
+    regexp: {
+        th: {
+            backgroundColor: '#222222',
+            backgroundImage: '-moz-linear-gradient(center top , #222222 0%, #1F1F1F  100%)'
+        }
+    },
+    object: {
+        th: {
+            backgroundColor: '#222222',
+            backgroundImage: '-moz-linear-gradient(center top , #222222 0%, #1F1F1F  100%)'
+        }
+    },
+    jquery : {
+        th: {
+            backgroundColor: '#222222',
+            backgroundImage: '-moz-linear-gradient(center top , #222222 0%, #1F1F1F  100%)'
+        }
+    },
+    error: {
+        th: {
+            backgroundColor: 'red',
+            color: 'yellow'
+        }
+    },
+    domelement: {
+        th: {
+            backgroundColor: '#222222',
+            backgroundImage: '-moz-linear-gradient(center top , #222222 0%, #1F1F1F  100%)'
+        }
+    },
+    date: {
+        th: {
+            backgroundColor: '#222222',
+            backgroundImage: '-moz-linear-gradient(center top , #222222 0%, #1F1F1F  100%)'
+        }
+    },
+    colHeader: {
+        th: {
+            backgroundColor: '#EEE',
+            color: '#000',
+            textTransform: 'uppercase'
+        }
+    },
+    'default': {
+        table: {
+            borderCollapse: 'collapse',
+            width: '100%'
+        },
+        td: {
+            padding: '5px',
+            fontSize: '12px',
+            backgroundColor: '#FFF',
+            color: '#222',
+            border: '1px solid #000',
+            verticalAlign: 'top',
+            whiteSpace: 'nowrap'
+        },
+        td_hover: {
+            /* Styles defined here will apply to all tr:hover > td,
+                - Be aware that "inheritable" properties (e.g. fontWeight) WILL BE INHERITED */
+        },
+        th: {
+            padding: '5px',
+            fontSize: '12px',
+            backgroundColor: '#222',
+            color: '#EEE',
+            textAlign: 'left',
+            border: '1px solid #000',
+            verticalAlign: 'top',
+            backgroundRepeat: 'repeat-x'
+        }
+    }
+};
+
 var pages = {
     pages: {},
     get: function(id) {
