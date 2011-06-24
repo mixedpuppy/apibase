@@ -262,7 +262,7 @@ def generateSchema(app, req):
                     f['doc'] = doc and reST_to_html_fragment(doc)
             f['id'] = "%s.%s.%s" % (appname, classname, name)
             f['httpMethod'] = m.conditions and m.conditions.get('method', 'GET') or 'GET'
-            path = f['path'] = url(m.routepath)
+            path = f['path'] = m.routepath[1:]
             parameterOrder = re.findall(r'\{(.*?)\}', path, re.U)
             if parameterOrder:
                 f['parameterOrder'] = parameterOrder

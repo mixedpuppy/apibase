@@ -51,9 +51,9 @@ var schema = {
         return path;
     },
     
-    call: function(obj, id, data, cb) {
-        var method = this.getById(obj, id);
-        var path = this.interpolatePath(method.path, data);
+    call: function(schemaObj, id, data, cb) {
+        var method = this.getById(schemaObj, id);
+        var path = this.interpolatePath(schemaObj.basePath + method.path, data);
         //dump("calling "+path+" with "+JSON.stringify(data)+"\n");
 
         $.ajax({
