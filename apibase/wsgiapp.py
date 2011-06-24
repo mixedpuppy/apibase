@@ -13,7 +13,7 @@ class Test(BaseController):
         response={'type': 'string',
                   'doc': ('this is the index')})
     def index(self):
-        return "this is the index"
+        return {"result": "this is the index"}
 
     @api
     @api_validate
@@ -25,7 +25,7 @@ class Test(BaseController):
         response={'type': 'string',
                   'doc': ('returns html view')})
     def view(self, item):
-        return "this is a view [%s]" % item
+        return {"result": "this is a view [%s]" % item}
 
     @api
     @api_entry(
