@@ -37,14 +37,14 @@
 <script id="tmplAPICallDoc" type="text/x-jquery-tmpl">
   <h4>Request Parameters</h4>
   {{if api.parameters}}
-  <table><colgroup><col/></colgroup><tbody>
+  <table class="parameters"><colgroup><col/></colgroup><tbody>
   {{each(i, p) $item.getOrderedParameters()}}
   <tr>
   <td>${p[1].required?'*':''}${p[0]}</td>
   <td><div><input id="${p[0]}"/></div></td>
   </tr>
   <tr>
-  <td/><td>${p[1].description} (${p[1].type})</td>
+  <td/><td><span class="paramdoc">${p[1].description}</span> <span class="paramtype">(${p[1].type})</span></td>
   </tr>
   {{/each}}
   </tbody></table>
@@ -54,7 +54,6 @@
   
   <h4>Response</h4>
   {{if response}}
-  
   <table class="responseObject"><colgroup><col/><col/></colgroup><tbody>
   <th colspan="3">${response.id} (${response.type})</th>
   {{each(i, p) response.properties}}
@@ -64,7 +63,7 @@
   {{/each}}
   </tbody></table>
   {{else api.response}}
-  <table><colgroup><col/></colgroup><tbody>
+  <table class="responseObject"><colgroup><col/></colgroup><tbody>
   <tr>
   <td class="response-type">${api.response.type}</td>
   <td class="response-description">${api.response.description}</td>
