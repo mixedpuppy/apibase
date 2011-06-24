@@ -4,6 +4,8 @@
  UPDATED 07-14-2009
  CONTRIBUTORS
     David Waller
+    
+ https://github.com/jamespadolsey/prettyPrint.js
 */
 
 var prettyPrint = (function(){
