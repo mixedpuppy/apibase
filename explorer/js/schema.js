@@ -54,7 +54,7 @@ var schema = {
     call: function(obj, id, data, cb) {
         var method = this.getById(obj, id);
         var path = this.interpolatePath(method.path, data);
-        dump("calling "+path+" with "+JSON.stringify(data)+"\n");
+        //dump("calling "+path+" with "+JSON.stringify(data)+"\n");
 
         $.ajax({
             url: path,
