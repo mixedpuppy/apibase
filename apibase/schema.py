@@ -252,7 +252,7 @@ def generateSchema(app, req):
             if name != action:
                 continue
             if not hasattr(method, '__api'):
-                raise Exception("method has no api")
+                continue
             f = class_data['methods'][name] = getattr(method, '__api', {})
             if 'doc' in f:
                 f['doc'] = reST_to_html_fragment(f['doc'])
@@ -261,7 +261,8 @@ def generateSchema(app, req):
                 if doc:
                     f['doc'] = doc and reST_to_html_fragment(doc)
             f['id'] = "%s.%s.%s" % (appname, classname, name)
-            f['httpMethod'] = m.conditions and m.conditions.get('method', 'GET') or 'GET'
+            if 'httpMethod' not in f:
+                f['httpMethod'] = m.conditions and m.conditions.get('method', ['GET'])[0] or 'GET'
             path = f['path'] = m.routepath[1:]
             parameterOrder = re.findall(r'\{(.*?)\}', path, re.U)
             if parameterOrder:
