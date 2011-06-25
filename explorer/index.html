@@ -41,7 +41,7 @@
   {{each(i, p) $item.getOrderedParameters()}}
   <tr>
   <td>${p[1].required?'*':''}${p[0]}</td>
-  <td><div><input id="${p[0]}"/></div></td>
+  <td><div><input id="${p[0]}" ${p[0] == 'password' ? "type=password" : ''} /></div></td>
   </tr>
   <tr>
   <td/><td><span class="paramdoc">${p[1].description}</span> <span class="paramtype">(${p[1].type})</span></td>
