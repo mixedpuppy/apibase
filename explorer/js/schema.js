@@ -36,7 +36,7 @@ Schema.prototype = {
         }
         if (schemaObj.schemas) {
             for (key in schemaObj.schemas) {
-                o = this.getById(id, schemaObj.resources[key]);
+                o = this.getById(id, schemaObj.schemas[key]);
                 if (o) return o;
             }
         }
