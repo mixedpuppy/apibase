@@ -219,7 +219,10 @@ pages.add({
             //dump("make a call now "+$(this).attr('data-for')+"\n");
             var cd = {};
             $("#apiCallData input").each(function() {
-                cd[$(this).attr('id')] = $(this).val();
+                cd[$(this).attr('name')] = $(this).val();
+            });
+            $("#apiCallData select").each(function() {
+                cd[$(this).attr('name')] = $(this).val();
             });
             //dump("calldata : "+JSON.stringify(cd)+"\n");
             

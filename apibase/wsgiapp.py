@@ -20,7 +20,7 @@ class Test(BaseController):
     @api_entry(
         description="an example view method",
         parameters={
-            'item': api_param('string', True, None, ['me'], 'path','User to query'),
+            'item': api_param('string', True, None, ['me', 'you'], 'path','User to query'),
         },
         response={'type': 'string',
                   'description': ('returns html view')})

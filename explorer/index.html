@@ -43,13 +43,13 @@
         <td>${p[1].required?'*':''}${p[0]}</td>
           <td><div>
             {{if p[1].enum}}
-              <select>
+              <select name="${p[0]}">
               {{each(i, e) p[1].enum}}
               <option value="${e}">${e}</option>
               {{/each}}
               </select>
             {{else}}
-              <input id="${p[0]}" ${p[0] == 'password' ? "type=password" : ''} />
+              <input name="${p[0]}" ${p[0] == 'password' ? "type=password" : ''} />
             {{/if}}
           </div>
         </td>
