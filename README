@@ -1,0 +1,6 @@
+Steps to run:
+
+* clone the repo
+* make build
+* source bin/activate
+* paster serve app.ini
