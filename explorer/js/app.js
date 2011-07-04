@@ -89,13 +89,15 @@ prettyPrint.config.styles = {
 
 var pages = {
     pages: {},
+    home: null,
     get: function(id) {
       return this.pages[id];  
     },
     show: function goPage(id, data) {
         var page = this.pages[id];
+        //dump('show page for '+id+' '+JSON.stringify(data)+"\n");
         if (page)
-            page.show.apply(page, data);
+            page.show.apply(page, [data]);
     },
     add: function(page) {
         this.pages[page.id] = page;
@@ -103,18 +105,119 @@ var pages = {
     init: function() {
         for (var page in this.pages) {
             this.pages[page].init();
+            if (!this.home || this.pages[page].home)
+                this.home = '#'+this.pages[page].id;
         }
+        this.nav();
+        this.toolbar();
+
+        $(window).hashchange( function() {
+            pages.go( location.hash ? location.hash : this.home );
+        });
+        // remove design elements we dont want
+        pages.go(this.home);
+    },
+    nav: function() {
+        // setup the toolbar links
+        //dump("installing click handlers\n");
+        $("nav li").click(function() {
+            if ($(this).hasClass('back')) {
+                history.go(-1);
+                return;
+            }
+            var command = $(this).attr('data-for');
+            var data = $(this).attr('data-value');
+            var target = $('#'+command);
+            var type = target.attr('data-role');
+            //dump("got nav click for "+command+"/"+data+"\n");
+            if (type === "page") {
+                if (data)
+                    location.hash = command + '/' + data;
+                else
+                    location.hash = command;
+            } else
+            if (type === "toolbar") {
+                target.toggleClass('visible');
+            }
+                $(this).toggleClass("on off");
+        });
+    },
+    toolbar: function() {
+        // setup the toolbar links
+        $("button.nav").click(function() {
+            if ($(this).hasClass('back')) {
+                history.go(-1);
+                return;
+            }
+            var command = $(this).attr('data-for');
+            var target = $('#'+command);
+            var type = target.attr('data-role');
+            
+            if (type === "page") {
+                location.hash = $(this).attr('data-for');
+            } else
+            if (type === "toolbar") {
+                $(this).toggleClass("on off");
+                target.toggleClass('visible');
+            }
+        });
+    },
+    go: function(hash) {
+        var data = hash.substr(1).split("/");
+        var page = data.shift();
+        var target = $('#'+page);
+        var menu = $("nav li."+page);
+        //dump("page "+page+" data "+data+"\n");
+        // change the menu highlight
+        menu.siblings().removeClass('selected');
+        menu.addClass('selected');
+        
+        target.addClass('selected');
+        // change the page
+        if (target.hasClass('secondary')) {
+            $('body').addClass('secondary');
+        } else {
+            target.siblings().removeClass('selected');
+            $('body').removeClass('secondary');
+        }
+        pages.show(page, data);
+        
+        // mo fuckin overflow
+        $('.overflow').textOverflow(null,true);
     }
 };
 
+$(document).ready(function($) {
+    pages.init();
+});
+
 pages.add({
     id: 'components',
+    home: true,
     init: function() {
         //dump("initialize "+this.id+"\n");
+        window.api = {
+            directory: new Directory(),
+            schema: new Schema()
+        };
+        // test /explorer/test/directory.json
+        window.api.directory.load('/api/discover/v1/apis', function(data) {
+            pages.get('components').renderDirectory();
+            // load up the first api in the directory entry
+            pages.get('components').show();
+        });
+    },
+    renderDirectory: function() {
+        //dump("rendering directory\n");
+        $("#tmplDirectory")
+            .tmpl( {'directory': window.api.directory.data} )
+            .appendTo("#apptoolbar nav");
+        pages.nav();
     },
     render: function() {
-        var data = window.apiSchema.data;
+        var data = window.api.schema.data;
         $("#components .apiinfo").empty();
+        $("#endpointList").empty();
 
         pages.get('components').renderResource(data.name, data);
 
@@ -142,14 +245,22 @@ pages.add({
             });
         }
     },
-    show: function() {
-        if (!window.apiSchema) {
-            window.apiSchema = new Schema()
-            // test path /explorer/test/books.json
-            window.apiSchema.load('/api/schema', function(data) {
-                pages.get('components').render();
-            });
+    show: function(data) {
+        var url;
+        if (data && data.length > 0) {
+            url = data.join('/');
+        } else if (window.api.directory.data) {
+            url = window.api.directory.data.items[0].discoveryLink;
+        } else {
+            return;
         }
+
+        window.api.directory.get(url, function(data) {
+            pages.get('components').render();
+            if (location.hash.split('/')[0] != '#components') {
+                pages.go( location.hash );
+            }
+        });
     }
 });
 
@@ -158,16 +269,16 @@ pages.add({
     init: function() {
     },
     show: function(endpoint) {
-        var data = window.apiSchema.getById(endpoint);
+        var data = window.api.schema.getById(endpoint);
         //dump(endpoint+": "+JSON.stringify(data)+"\n");
 
         function getResponseObject() {
             var param;
-            if (data.response) {
+            if (data && data.response) {
                 $.each(data.response, function(pname) {
                     if (pname == '$ref') {
                         pname = data.response[pname];
-                        param = window.apiSchema.getById(pname);
+                        param = window.api.schema.getById(pname);
                     }
                 });
                 if (param) {
@@ -178,9 +289,10 @@ pages.add({
         }
         var resp = getResponseObject();
 
-        $('#apicall .apicallinfo h3').text(endpoint);
+        $('#apicall .apicallinfo h3').text(endpoint.toString());
         $('#apiCallData').empty();
         $('#apiResponseData').empty();
+        //dump(endpoint+": "+JSON.stringify({'api': data, 'response': resp})+"\n");
 
         $("#tmplAPICallDoc")
             .tmpl( {'api': data, 'response': resp}, {
@@ -192,7 +304,7 @@ pages.add({
                             var pname = data.parameterOrder[i];
                             var param = data.parameters[pname];
                             if (pname == '$ref') {
-                                param = window.apiSchema.getById(param);
+                                param = window.api.schema.getById(param);
                             }
                             params.push([pname, param]);
                         }
@@ -201,7 +313,7 @@ pages.add({
                         $.each(data.parameters, function(pname) {
                             var param = data.parameters[pname];
                             if (pname == '$ref') {
-                                param = window.apiSchema.getById(param);
+                                param = window.api.schema.getById(param);
                             }
                             if (!data.parameterOrder || data.parameterOrder.indexOf(pname) < 0)
                                 params.push([pname, param]);
@@ -226,7 +338,7 @@ pages.add({
             });
             //dump("calldata : "+JSON.stringify(cd)+"\n");
             
-            window.apiSchema.call(id, cd, function(resp) {
+            window.api.schema.call(id, cd, function(resp) {
                 //dump("calldata : "+JSON.stringify(resp)+"\n");
                 var tbl = prettyPrint( resp );
                 $('#apiResponseData').append(tbl);

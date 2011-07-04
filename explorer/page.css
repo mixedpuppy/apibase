@@ -209,33 +209,25 @@ div[data-role="toolbar"] li {
     cursor: pointer;
     background-position: left center;
     background-repeat: no-repeat;
+  border: solid 2px transparent;
+}
+
+div[data-role="toolbar"] li img {
+    display: block;
+    margin: auto;
+    vertical-align: middle;
+}
+div[data-role="toolbar"] li img.small {
+    margin-top: 13px;
+    margin-bottom: 13px;
 }
 
 div[data-role="toolbar"] li.selected,
 div[data-role="toolbar"] li.on {
     background-position: right center;
-}
-
-div[data-role="toolbar"] li.messages {
-    background-image: url("i/sidebar_inbox.png");
-}
-
-div[data-role="toolbar"] li.compose {
-    background-image: url("i/sidebar_compose.png");
-}
-
-div[data-role="toolbar"] li.labels {
-    background-image: url("i/sidebar_labels.png");
-}
-
-div[data-role="toolbar"] li.search {
-    background-image: url("i/sidebar_search.png");
-}
-
-div[data-role="toolbar"] li.settings {
-    background-image: url("i/sidebar_settings.png");
-    position: absolute;
-    bottom: 0;
+    /*border-right-color: #e6e6e6;*/
+    /*border-style:solid;*/
+    /*border-width:2px;*/
 }
 
 div[data-role="toolbar"] li.back {

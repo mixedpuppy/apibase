@@ -12,13 +12,20 @@
     <script type="text/javascript" src="js/prettyprint.js"></script>
     <script type="text/javascript" src="js/schema.js"></script>
     <script type="text/javascript" src="js/app.js"></script>
-    <script type="text/javascript" src="js/nav.js"></script>
 </head>
 
 <body>
 
+<script id="tmplDirectory" type="text/x-jquery-tmpl">
+  <ul class="clearfix">
+    {{each(i, schema) directory.items}}
+    <li data-for="components" data-value="${schema.discoveryLink}"><img src="${schema.icons.x16}" alt="${schema.title}" class="small"/></li>
+    {{/each}}
+  <ul>
+</script>
+
 <script id="tmplAPIDoc" type="text/x-jquery-tmpl">
-  <h2 class="api-title"><img src="${schema.icons.x16}"/> ${schema.title}</h2>
+  <h2 class="api-title"><img src="${schema.icons.x16}" class="small"/> ${schema.title}</h2>
   <div class="api-description">${schema.description}</div>
 </script>
 
@@ -106,21 +113,9 @@
             </ul>
         </div>
 
-<!--
-        <div data-role="page" id="endpoints" class="primary clearfix boxFlex ">
-            <div data-role="header" class="hbox endpointinfo">
-                <h1 class="boxFlex">component.endpoint</h1>
-                <button class="nav home active" data-for="components"></button>
-            </div>
-            <ul id="endpointList">
-
-            </ul>
-        </div>
--->
-
         <div data-role="page" id="apicall" class="secondary clearfix boxFlex">
             <div data-role="header" class="hbox apicallinfo">
-                <h3 class="boxFlex">component.endpoint.call</h3>
+                <h3 class="boxFlex">?</h3>
             </div>
             <div class="content">
             <div id="apiCallData"></div>
@@ -133,9 +128,6 @@
   
     <div data-role="toolbar" id="apptoolbar">
         <nav>
-            <ul class="clearfix">
-                <li class="labels" data-for="components"></li>
-            </ul>
         </nav>
     </div>
 

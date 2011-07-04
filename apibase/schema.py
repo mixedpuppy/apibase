@@ -11,7 +11,7 @@ from docutils import core
 # forked to https://bitbucket.org/mixedpuppy/jsonor
 from jsonor import validate, ValidationError, SchemaCatalog, schema_uri
 
-from apibase.baseapp import BaseController, api
+from apibase import BaseController, api, map
 
 log = logging.getLogger(__name__)
 
@@ -271,7 +271,7 @@ def generateSchema(app, req):
         resources[classname] = class_data
 
 
-class APIDescription(BaseController):
+class Discover(BaseController):
     """
 API Documentation
 =================
@@ -290,9 +290,47 @@ user interfaces that want to show an API reference.
         response={'type': 'object',
                   'description': ('A JSON schema object that describes the API '
                           'methods and parameters.')})
-    def schema(self):
-        return getattr(self.app, "schema")
+    def schema(self, path_info):
+        data = path_info.split('/')
+        schema = getattr(self.app, "schema")
+        if schema.get('name') == data[0]:
+            return getattr(self.app, "schema")
+        else:
+            raise Exception("NOT IMPLEMENTED")
+        
+    @api
+    @api_validate
+    @api_entry(
+        description="Returns a json object containing the discovery directory",
+        response={'type': 'object',
+                  'description': 'directory json object'})
+    def directory(self):
+        schema = getattr(self.app, "schema")
 
+        dir = {}
+        dir["kind"] = "discovery#directoryList"
+        items = dir["items"] = []
+        items.append({
+            "kind": "discovery#directoryItem",
+            "id": schema.get("id"),
+            "name":schema.get("name"),
+            "version": schema.get("version"),
+            "title": schema.get("title"),
+            "description": schema.get("description"),
+            "discoveryLink": '/'.join(['.','apis',
+                                      schema.get("name"),
+                                      schema.get("version", "v1"),
+                                      schema.get("protocol", "rest")]),
+            "icons": schema.get("icons"),
+            "documentationLink": schema.get("documentationLink"),
+            "labels": schema.get("labels"),
+            "preferred": schema.get("preferred", True)
+        })
+        return dir
+
+with map.submapper(path_prefix='/discover/v1') as disco:
+    disco.connect('/apis/{path_info:.*}', controller=Discover, action='schema', path_info='')
+    disco.connect('/apis', controller=Discover, action='directory')
 
 
 if __name__ == '__main__':  # pragma: no cover

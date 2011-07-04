@@ -1,7 +1,6 @@
-
+from apibase import map
 from apibase.baseapp import *
-from apibase.schema import APIDescription, api_entry, api_param, api_validate, generateSchema
-from routes import Mapper
+from apibase.schema import api_entry, api_param, api_validate, generateSchema
 from webob.dec import wsgify
 
 
@@ -62,13 +61,11 @@ class myApp(BaseApplication):
             generateSchema(self, req)
         return super(myApp, self).__call__(req)
 
-map = Mapper()
-with map.submapper(path_prefix='/v1') as v1:
+with map.submapper(path_prefix='/myapp/v1') as v1:
     v1.connect('/', controller=Test)
     v1.connect('/view/{item}', controller=Test, action='view')
     v1.connect('/ok', controller=Test, action='ok')
     v1.connect('/fail', controller=Test, action='fail')
-map.connect('/schema', controller=APIDescription, action='schema')
 
 
 make_app = set_app(map, appKlass=myApp)

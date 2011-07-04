@@ -1,4 +1,39 @@
 
+function Directory() {
+    this.base = '/api/discover/v1/'
+    this.discover = this.base + 'apis';
+    this.data = null;
+}
+Directory.prototype = {
+    load: function(url, cb) {
+        var self = this;
+        $.ajax({
+            url: url ? url: this.discover,
+            type: "GET",
+            success: function(data, textStatus, jqXHR) {
+                //dump("data: "+JSON.stringify(data)+"\n");
+                self.data = data;
+                if (cb)
+                    cb(data);
+            },
+            error: function(jqXHR, errorStr, ex) {
+            }
+        });
+    },
+    find: function(discoveryLink) {
+        for (var i in this.data.items) {
+            if (this.data.items[i].discoveryLink == discoveryLink) {
+                
+            }
+        }
+    },
+    get: function(discoveryLink, cb) {
+        var url = this.base + discoveryLink;
+        //dump("got discovery request "+url+"\n");
+        window.api.schema.load(url, cb);
+    }
+}
+
 function Schema(url) {
     this.data = null;
 }
@@ -21,7 +56,8 @@ Schema.prototype = {
     
     getById: function(id, schemaObj) {
         if (!schemaObj) schemaObj = this.data;
-        if (schemaObj.id && schemaObj.id === id) return schemaObj;
+        
+        if (schemaObj.id && schemaObj.id == id) return schemaObj;
         if (schemaObj.methods) {
             for (key in schemaObj.methods) {
                 o = this.getById(id, schemaObj.methods[key]);
