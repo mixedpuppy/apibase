@@ -95,8 +95,7 @@ Schema.prototype = {
         var method = this.getById(id);
         var path = this.interpolatePath(this.data.basePath + method.path, data);
         //dump("calling "+path+" with "+JSON.stringify(data)+"\n");
-
-        $.ajax({
+        var opts = {
             url: path,
             type: method.httpMethod,
             data: data,
@@ -109,6 +108,16 @@ Schema.prototype = {
                 if (cb)
                     cb(errorStr);
             }
-        });        
+        };
+        if (method.encoding) {
+            opts.contentType = method.encoding;
+            if (method.encoding != 'application/x-www-form-urlencoded') {
+                opts.processData = false;
+                if (method.encoding == 'application/json') {
+                    opts.data = JSON.stringify(opts.data);
+                }
+            }
+        }
+        $.ajax(opts);        
     }
 }
