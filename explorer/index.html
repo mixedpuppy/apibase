@@ -30,13 +30,13 @@
 </script>
 
 <script id="tmplComponentList" type="text/x-jquery-tmpl">
-  <li id="${name}" class="title">${name}
+  <li id="${resource.id}" class="title">${resource.id}
   <div class="component-description">{{html resource.description}}</div>
   </li>
 </script>
 
 <script id="tmplEndpointList" type="text/x-jquery-tmpl">
-  <li id="${id}" class="title"><h3>${name}</h3>
+  <li id="${resource.id}" class="title"><h3>${resource.id}</h3>
   <div class="component-description">{{html resource.description}}</div>
   </li>
 </script>
@@ -55,8 +55,16 @@
               <option value="${e}">${e}</option>
               {{/each}}
               </select>
+            {{else (p[1].type == 'boolean')}}
+              <select name="${p[0]}">
+              {{if (!p[1].required)}}
+              <option value=""></option>
+              {{/if}}
+              <option value="true">true</option>
+              <option value="false">false</option>
+              </select>
             {{else}}
-              <input name="${p[0]}" ${p[0] == 'password' ? "type=password" : ''} />
+              <input name="${p[0]}" ${p[0] == 'password' ? "type=password" : ''} value="${p[1].default}" />
             {{/if}}
           </div>
         </td>
@@ -70,7 +78,7 @@
     <div>There are no parameters for this call</div>
   {{/if}}
   
-  <h4>Response</h4>
+  <h4>Response Object</h4>
   {{if response}}
     <table class="responseObject"><colgroup><col/><col/></colgroup><tbody>
     <th colspan="3">${response.id} (${response.type})</th>

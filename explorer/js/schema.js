@@ -1,14 +1,14 @@
 
-function Directory() {
-    this.base = '/api/discover/v1/'
-    this.discover = this.base + 'apis';
+function Directory(base, url) {
+    this.base = base || '/api/discovery/v1/'
+    this.discover = url || this.base + 'apis';
     this.data = null;
 }
 Directory.prototype = {
-    load: function(url, cb) {
+    load: function(cb) {
         var self = this;
         $.ajax({
-            url: url ? url: this.discover,
+            url: this.discover,
             type: "GET",
             success: function(data, textStatus, jqXHR) {
                 //dump("data: "+JSON.stringify(data)+"\n");
@@ -86,6 +86,8 @@ Schema.prototype = {
             if (data[n]) {
                 path = path.replace(m[i], data[n]);
                 delete data[n];
+            } else {
+                throw new Error("Required value for '"+n+"' not provided");
             }
         }
         return path;

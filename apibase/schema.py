@@ -245,6 +245,9 @@ def generateSchema(app, req):
                 'methods': {},
             }
         )
+        print m
+        if hasattr(m, 'name'):
+            print m.name
         action = m.defaults.get('action','index')
         for (name, method) in inspect.getmembers(class_):
             if not isinstance(method, types.MethodType):
@@ -260,18 +263,30 @@ def generateSchema(app, req):
                 doc = inspect.getdoc(method)
                 if doc:
                     f['doc'] = doc and reST_to_html_fragment(doc)
-            f['id'] = "%s.%s.%s" % (appname, classname, name)
+            if hasattr(m, 'name') and m.name:
+                f['id'] = "%s.%s.%s.%s" % (appname, m.name, classname, name)
+            else:
+                f['id'] = "%s.%s.%s" % (appname, classname, name)
             if 'httpMethod' not in f:
                 f['httpMethod'] = m.conditions and m.conditions.get('method', ['GET'])[0] or 'GET'
             path = f['path'] = m.routepath[1:]
             parameterOrder = re.findall(r'\{(.*?)\}', path, re.U)
             if parameterOrder:
                 f['parameterOrder'] = parameterOrder
+                if 'parameters' not in f:
+                    f['parameters'] = {}
+                for param in parameterOrder:
+                    if param not in f['parameters'].keys():
+                        f['parameters'][param] = {
+                            'type': 'string',
+                            'location': 'path',
+                            'required': True
+                        }
 
         resources[classname] = class_data
 
 
-class Discover(BaseController):
+class Apis(BaseController):
     """
 API Documentation
 =================
@@ -287,13 +302,21 @@ user interfaces that want to show an API reference.
     @api_validate
     @api_entry(
         description="Returns a json object containing documentation",
+        parameters={
+            'api': api_param('string', True, None, None, 'path','Name of the API being requested'),
+            'version': api_param('string', True, 'v1', None, 'path','Version of the API'),
+            'kind': api_param('string', True, 'rest', None, 'path','API protocol'),
+            'label': api_param('string', False, None, None, 'query','Status label for the API e.g. labs'),
+            'name': api_param('string', False, None, None, 'query','Restrict results to APIs with the provided name'),
+            'prefered': api_param('boolean', False, False, None, 'query','Restrict results according to whether or not the APIs are the latest stable versions.'),
+            'prettyprint': api_param('boolean', False, False, None, 'query','Return the response in a human-readable, indented format if true.'),
+        },
         response={'type': 'object',
                   'description': ('A JSON schema object that describes the API '
                           'methods and parameters.')})
-    def schema(self, path_info):
-        data = path_info.split('/')
+    def getRest(self, api, version, kind):
         schema = getattr(self.app, "schema")
-        if schema.get('name') == data[0]:
+        if schema.get('name') == api:
             return getattr(self.app, "schema")
         else:
             raise Exception("NOT IMPLEMENTED")
@@ -302,9 +325,12 @@ user interfaces that want to show an API reference.
     @api_validate
     @api_entry(
         description="Returns a json object containing the discovery directory",
+        parameters={
+            'prettyprint': api_param('boolean', False, False, None, 'query','Return the response in a human-readable, indented format if true.'),
+        },
         response={'type': 'object',
                   'description': 'directory json object'})
-    def directory(self):
+    def list(self):
         schema = getattr(self.app, "schema")
 
         dir = {}
@@ -328,9 +354,9 @@ user interfaces that want to show an API reference.
         })
         return dir
 
-with map.submapper(path_prefix='/discover/v1') as disco:
-    disco.connect('/apis/{path_info:.*}', controller=Discover, action='schema', path_info='')
-    disco.connect('/apis', controller=Discover, action='directory')
+with map.submapper(path_prefix='/discovery/v1') as disco:
+    disco.connect('discovery', '/apis/{api}/{version}/{kind}', controller=Apis, action='getRest')
+    disco.connect('discovery', '/apis', controller=Apis, action='list')
 
 
 if __name__ == '__main__':  # pragma: no cover

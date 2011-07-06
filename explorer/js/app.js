@@ -201,7 +201,7 @@ pages.add({
             schema: new Schema()
         };
         // test /explorer/test/directory.json
-        window.api.directory.load('/api/discover/v1/apis', function(data) {
+        window.api.directory.load(function(data) {
             pages.get('components').renderDirectory();
             // load up the first api in the directory entry
             pages.get('components').show();
@@ -232,9 +232,8 @@ pages.add({
     renderResource: function(endpoint, ep) {
         if (ep.methods) {
             $.each(ep.methods, function(methodName) {
-                var fullname = endpoint+"."+methodName
                 $("#tmplEndpointList")
-                    .tmpl( {'id': fullname, 'name': fullname,'resource': ep.methods[methodName]} )
+                    .tmpl( {'resource': ep.methods[methodName]} )
                     .appendTo("#endpointList");  
             });
         }
@@ -331,18 +330,23 @@ pages.add({
             //dump("make a call now "+$(this).attr('data-for')+"\n");
             var cd = {};
             $("#apiCallData input").each(function() {
-                cd[$(this).attr('name')] = $(this).val();
+                if ($(this).val() !== '')
+                    cd[$(this).attr('name')] = $(this).val();
             });
             $("#apiCallData select").each(function() {
-                cd[$(this).attr('name')] = $(this).val();
+                if ($(this).val() !== '')
+                    cd[$(this).attr('name')] = $(this).val();
             });
             //dump("calldata : "+JSON.stringify(cd)+"\n");
-            
-            window.api.schema.call(id, cd, function(resp) {
-                //dump("calldata : "+JSON.stringify(resp)+"\n");
-                var tbl = prettyPrint( resp );
-                $('#apiResponseData').append(tbl);
-            });
+            try {
+                window.api.schema.call(id, cd, function(resp) {
+                    //dump("calldata : "+JSON.stringify(resp)+"\n");
+                    var tbl = prettyPrint( resp );
+                    $('#apiResponseData').append(tbl);
+                });
+            } catch(e) {
+                $('#apiResponseData').text(e.toString());
+            }
         });
     }
 });
