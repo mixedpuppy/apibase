@@ -245,9 +245,6 @@ def generateSchema(app, req):
                 'methods': {},
             }
         )
-        print m
-        if hasattr(m, 'name'):
-            print m.name
         action = m.defaults.get('action','index')
         for (name, method) in inspect.getmembers(class_):
             if not isinstance(method, types.MethodType):
